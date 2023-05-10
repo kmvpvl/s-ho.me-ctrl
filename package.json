@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/node": "^20.1.2",
     "@types/node-dht-sensor": "^0.4.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "ts-node": "^10.9.1"
   }
 }
