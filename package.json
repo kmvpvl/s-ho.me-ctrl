@@ -1,0 +1,23 @@
+{
+  "name": "s-ho.me-ctrl",
+  "version": "1.0.0",
+  "description": "Node.JS application of S-HO.ME controller",
+  "main": "index.ts",
+  "scripts": {
+    "start": "npm run build:live",
+    "build": "tsc -p .",
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "gpio": "^0.2.10",
+    "node-dht-sensor": "^0.4.3",
+    "nodemon": "^2.0.22"
+  },
+  "devDependencies": {
+    "@types/node": "^20.1.2",
+    "@types/node-dht-sensor": "^0.4.0",
+    "typescript": "^5.0.4"
+  }
+}
