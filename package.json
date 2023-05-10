@@ -2,9 +2,10 @@
   "name": "s-ho.me-ctrl",
   "version": "1.0.0",
   "description": "Node.JS application of S-HO.ME controller",
-  "main": "index.ts",
+  "main": "lib/index.js",
   "scripts": {
-    "start": "npm run build:live",
+    "start:prod": "nodemon",
+    "start:debug": "npm run build:live",
     "build": "tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
   },
