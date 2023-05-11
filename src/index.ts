@@ -1,5 +1,15 @@
-import dht from 'node-dht-sensor';
-setInterval(()=> {
-    const data = dht.read(22, 4);
-    console.log(`temp=${data.temperature}; hum=${data.humidity}`);
-}, 30000);
+import Controller, { ControllerProps } from './model/controller';
+import fs from 'fs';
+
+let settings: ControllerProps;
+const removeJSONComments = (json: string) => {
+    return json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m);
+}
+
+try {
+    let strSettings = fs.readFileSync("settings.json", "utf-8");
+    settings =  JSON.parse(removeJSONComments(strSettings));
+    const controller = new Controller(settings);
+} catch (err: any) {
+    console.error(`Controller not started - ${err.message}`);
+}

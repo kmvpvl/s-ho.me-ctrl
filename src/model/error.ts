@@ -1,5 +1,6 @@
 export type ErrorCode = "abstract:notimplemented" |
-"abstract:unknown";
+"abstract:unknown" |
+"hardware:unknowndevice";
 export default class SHOMEError extends Error {
     protected code: ErrorCode;
     protected desc?: string;

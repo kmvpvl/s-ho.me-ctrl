@@ -1,0 +1,91 @@
+{
+    // current mode. May be empty or absent. If absent then it uses default names: controller, devices, server etc.
+    "mode": "prod",
+    //enumeration of all modes
+    "modes": [
+        {
+            // name of mode 
+            "name": "prod",
+            // name of data structure
+            "controller": "controller",
+            "devices": "devices",
+            "server": "server"
+        },
+        { 
+            "name": "test",
+            "controller": "controller_test",
+            "devices": "devices_test"
+        }
+    ],
+
+    // controller requisites
+    "controller": {
+        // name of controller
+        "name": "test", 
+        // description of controller
+        "description": "test", 
+        // autoupdate application settings
+        "autoupdate": {
+            "auto": true,
+            "repo": "https://github.com/kmvpvl/s-ho.me-ctrl.git",
+            "branch": "stable"
+        },
+        "location": {},
+        "buffer": {},
+        "logs": {}
+    },
+    "notifications": {
+        "auth_TG": "",
+        "on": true,
+        "start": true,
+        "altURLToggle": true,
+        "lostServer": true,
+        "unknownHardware": true
+    },
+    "server": {
+        "url": "",
+        "alt_url": "",
+        "auth_SHOME": "",
+        "attemptsBeforeAltURL": 4
+    },
+    // enumeration of all devices connected to controller
+    "devices": [
+        {
+            "id": "TEMP1",
+            "name": "Temp 1fl SW room",
+            "type": "Temp",
+            "hardware": "DHT22",
+            "pin": 4,
+            "emulation": false,
+            "freqRead": 60,
+            "freqReport": 600,
+            "threshold": 0.1,
+            "precision": 1,
+            "reportOnValueChanged": true,
+            "location": {
+                "layer": "1st floor",
+                "x": 0,
+                "y": 0
+            },
+            "ranges": [
+                {
+                    "name": "dangerous",
+                    "color": "red",
+                    "max": 8
+                },
+                {
+                    "name": "comfort",
+                    "color": "green",
+                    "min": 8,
+                    "max": 22
+                },
+                {
+                    "name": "hot",
+                    "color": "yellow",
+                    "min": 22
+                }
+            ]
+        }
+    ]
+
+}
