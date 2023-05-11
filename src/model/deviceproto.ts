@@ -39,7 +39,7 @@ export default class DeviceProto {
         this.props = props;
         this.eventEmitter = new EventEmitter();
         this.createReadTimer();
-        console.log(`Device ${props.id} (${props.name}: type=${props.type}, hw=${props.hardware}, pin=${props.pin}) has just initialized`);
+        console.log(`Device ${props.id} (${props.name}: type=${props.type}, hw=${props.hardware}, pin=${props.pin}) has just initialized. Emulation='${props.emulation}'`);
     }
 
     public createReadTimer() {

@@ -1,15 +1,17 @@
 import { randomInt } from "crypto";
 import DeviceProto from "./deviceproto";
-import {promise as gpio} from 'rpi-gpio';
+//import {promise as gpio} from 'rpi-gpio';
+import rpio from "rpio";
+
 
 export class PIRMotion extends DeviceProto {
     protected async initPin(): Promise<void> {
-        await gpio.setup(this.props.pin, gpio.DIR_IN);
+        rpio.open(this.props.pin, rpio.INPUT);
     }
     protected async draftRead(): Promise<number> {
         let data;
         if (!this.props.emulation) {
-            const d = await gpio.read(this.props.pin);
+            const d = rpio.read(this.props.pin);
             data = d?1:0;
         } else {
             data = randomInt(0, 2);

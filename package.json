@@ -14,12 +14,12 @@
   "dependencies": {
     "node-dht-sensor": "^0.4.3",
     "nodemon": "^2.0.22",
-    "rpi-gpio": "^2.1.7"
+    "rpio": "^2.4.2"
   },
   "devDependencies": {
     "@types/node": "^20.1.2",
     "@types/node-dht-sensor": "^0.4.0",
-    "@types/rpi-gpio": "^2.1.1",
+    "@types/rpio": "^2.4.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }
