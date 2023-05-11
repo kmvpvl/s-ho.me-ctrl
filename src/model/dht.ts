@@ -16,7 +16,7 @@ export class DHT22Temp extends DeviceProto {
                 humidity: NaN
             }
         }
-        return this.props.precision?DeviceProto.setPrecision(data.temperature, this.props.precision):data.temperature;
+        return data.temperature;
     }
 }
 export class DHT22Hum extends DeviceProto {
@@ -33,6 +33,6 @@ export class DHT22Hum extends DeviceProto {
                 humidity: this._value!==undefined?this._value + randomInt(0, 3)/10.0:randomInt(0, 50)
             }
         }
-        return this.props.precision?DeviceProto.setPrecision(data.humidity, this.props.precision):data.humidity;
+        return data.humidity;
     }
 }

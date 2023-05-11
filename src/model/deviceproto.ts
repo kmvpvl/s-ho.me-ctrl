@@ -64,8 +64,8 @@ export default class DeviceProto {
 
     public updateValue(): void {
         const dvalue = this.draftRead();
-        if ((this._value!==undefined && !this.props.threshold && !Math.abs(this._value - dvalue)) 
-        || (this._value!==undefined && this.props.threshold && Math.abs(this._value - dvalue) < this.props.threshold)) {
+        if ((this.value!==undefined && !this.props.threshold && !Math.abs(this.value - dvalue)) 
+        || (this.value!==undefined && this.props.threshold && Math.abs(this.value - dvalue) < this.props.threshold)) {
             // value not changed or change in range of threshold, do nothing
         } else {
             this._value = dvalue;
@@ -77,7 +77,7 @@ export default class DeviceProto {
         this.eventEmitter.on(event, callback);
     }
     public get value(): number | undefined {
-        return this._value;
+        return this.props.precision && this._value!==undefined?DeviceProto.setPrecision(this._value, this.props.precision):this._value;
     }
 
     public get id(): string {
