@@ -77,7 +77,7 @@ export default class DeviceProto {
         this.eventEmitter.on(event, callback);
     }
     public get value(): number | undefined {
-        return this.props.precision && this._value!==undefined?DeviceProto.setPrecision(this._value, this.props.precision):this._value;
+        return this.props.precision!==undefined && this._value!==undefined?DeviceProto.setPrecision(this._value, this.props.precision):this._value;
     }
 
     public get id(): string {
