@@ -49,12 +49,12 @@ export default class DeviceProto {
         }, this.props.freqRead * 1000, this);
     }
     
-    protected async initPin(): Promise<void>{
+    protected initPin(): void{
         throw new SHOMEError("abstract:notimplemented", `initPin function`);
     }
 
-    protected async draftRead(): Promise<number> {
-        await this.initPin();
+    protected draftRead(): number {
+        this.initPin();
         throw new SHOMEError("abstract:notimplemented", `draftRead function`);
     }
 
@@ -62,8 +62,8 @@ export default class DeviceProto {
         return parseFloat(n.toFixed(precision));
     } 
 
-    public async updateValue(): Promise<void> {
-        const dvalue = await this.draftRead();
+    public updateValue(): void {
+        const dvalue = this.draftRead();
         if ((this._value!==undefined && !this.props.threshold && !Math.abs(this._value - dvalue)) 
         || (this._value!==undefined && this.props.threshold && Math.abs(this._value - dvalue) < this.props.threshold)) {
             // value not changed or change in range of threshold, do nothing

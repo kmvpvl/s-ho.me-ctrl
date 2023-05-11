@@ -3,10 +3,10 @@ import DeviceProto from "./deviceproto";
 import dht from 'node-dht-sensor';
 
 export class DHT22Temp extends DeviceProto {
-    protected async initPin(): Promise<void> {
+    protected initPin(): void {
         
     }
-    protected async draftRead(): Promise<number> {
+    protected draftRead(): number {
         let data: dht.SensorData;
         if (!this.props.emulation) {
             data = dht.read(22, 4);

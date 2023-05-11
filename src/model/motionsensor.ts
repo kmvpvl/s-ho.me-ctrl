@@ -5,10 +5,10 @@ import rpio from "rpio";
 
 
 export class PIRMotion extends DeviceProto {
-    protected async initPin(): Promise<void> {
+    protected initPin(): void {
         rpio.open(this.props.pin, rpio.INPUT);
     }
-    protected async draftRead(): Promise<number> {
+    protected draftRead(): number {
         let data;
         if (!this.props.emulation) {
             const d = rpio.read(this.props.pin);
