@@ -2,6 +2,7 @@ import DeviceProto, { DeviceProps } from "./deviceproto";
 import { DHT22Temp } from "./dht";
 import SHOMEError from "./error";
 import { PIRMotion } from "./motionsensor";
+import rpio from "rpio";
 
 export type ControllerMode = {
     name: string;
@@ -47,6 +48,7 @@ export default class Controller {
         this.props = props;
         this.devs = [];
         console.log(`Controller ${this.props.controller.name} is starting...`);
+        rpio.init({mapping: 'gpio'});
         for (const [i, device] of Object.entries(props.devices)){
             console.log(`${i}: Checking device id='${device.id}'; name='${device.name}'`);
             let d: DeviceProto;
