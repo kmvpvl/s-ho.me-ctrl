@@ -56,11 +56,47 @@
             "type": "Temp",
             "hardware": "DHT22",
             "pin": 4,
-            "emulation": false,
-            "freqRead": 60,
+            //"emulation": true,
+            "freqRead": 30,
             "freqReport": 600,
             "threshold": 0.1,
             "precision": 1,
+            "reportOnValueChanged": true,
+            "location": {
+                "layer": "1st floor",
+                "x": 0,
+                "y": 0
+            },
+            "ranges": [
+                {
+                    "name": "dangerous",
+                    "color": "red",
+                    "max": 8
+                },
+                {
+                    "name": "comfort",
+                    "color": "green",
+                    "min": 8,
+                    "max": 22
+                },
+                {
+                    "name": "hot",
+                    "color": "yellow",
+                    "min": 22
+                }
+            ]
+        },
+        {
+            "id": "MOT1",
+            "name": "Motion 1fl SW room",
+            "type": "Motion",
+            "hardware": "PIR",
+            "pin": 7,
+            //"emulation": true,
+            "freqRead": 40,
+            "freqReport": 600,
+            "threshold": 0.1,
+            "precision": 0,
             "reportOnValueChanged": true,
             "location": {
                 "layer": "1st floor",
