@@ -16,7 +16,6 @@ export class PIRMotion extends DeviceProto {
         } else {
             data = randomInt(0, 2);
         }
-        console.log(`Draft read device id='${this.props.id}'; on=${data}`);
 
         return this.props.precision?DeviceProto.setPrecision(data, this.props.precision):data;
     }

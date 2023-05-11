@@ -87,6 +87,24 @@
             ]
         },
         {
+            "id": "HUM11",
+            "name": "Hum 1fl SW room",
+            "type": "Hum",
+            "hardware": "DHT22",
+            "pin": 4,
+            //"emulation": true,
+            "freqRead": 30,
+            "freqReport": 600,
+            "threshold": 0.1,
+            "precision": 1,
+            "reportOnValueChanged": true,
+            "location": {
+                "layer": "1st floor",
+                "x": 0,
+                "y": 0
+            }
+        },
+        {
             "id": "MOT1",
             "name": "Motion 1fl SW room",
             "type": "Motion",
@@ -105,20 +123,16 @@
             },
             "ranges": [
                 {
-                    "name": "dangerous",
+                    "name": "motion",
                     "color": "red",
-                    "max": 8
+                    "min": 0.5,
+                    "max": 1
                 },
                 {
-                    "name": "comfort",
-                    "color": "green",
-                    "min": 8,
-                    "max": 22
-                },
-                {
-                    "name": "hot",
-                    "color": "yellow",
-                    "min": 22
+                    "name": "nobody",
+                    "color": "silver",
+                    "min": 0,
+                    "max": 0.5
                 }
             ]
         }

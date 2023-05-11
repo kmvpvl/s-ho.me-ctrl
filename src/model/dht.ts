@@ -16,8 +16,23 @@ export class DHT22Temp extends DeviceProto {
                 humidity: NaN
             }
         }
-        console.log(`Draft read device id='${this.props.id}'; temp=${data.temperature}`);
-
         return this.props.precision?DeviceProto.setPrecision(data.temperature, this.props.precision):data.temperature;
+    }
+}
+export class DHT22Hum extends DeviceProto {
+    protected initPin(): void {
+        
+    }
+    protected draftRead(): number {
+        let data: dht.SensorData;
+        if (!this.props.emulation) {
+            data = dht.read(22, 4);
+        } else {
+            data = {
+                temperature: this._value!==undefined?this._value + randomInt(-1, 2)/10.0:randomInt(-29, 30),
+                humidity: this._value!==undefined?this._value + randomInt(0, 3)/10.0:randomInt(0, 50)
+            }
+        }
+        return this.props.precision?DeviceProto.setPrecision(data.humidity, this.props.precision):data.humidity;
     }
 }

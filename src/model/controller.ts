@@ -1,5 +1,5 @@
 import DeviceProto, { DeviceProps } from "./deviceproto";
-import { DHT22Temp } from "./dht";
+import { DHT22Hum, DHT22Temp } from "./dht";
 import SHOMEError from "./error";
 import { PIRMotion } from "./motionsensor";
 import rpio from "rpio";
@@ -55,6 +55,9 @@ export default class Controller {
             switch(`${device.hardware}:${device.type}`) {
                 case 'DHT22:Temp':
                     d = new DHT22Temp(device);
+                    break;
+                case 'DHT22:Hum':
+                    d = new DHT22Hum(device);
                     break;
                 case 'PIR:Motion':
                     d = new PIRMotion(device);
