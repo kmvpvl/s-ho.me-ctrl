@@ -1,4 +1,4 @@
-import EventEmitter from "node:events";
+import EventEmitter from "events";
 import SHOMEError from "./error";
 
 export type DeviceType = "Temp" | "Hum" | "Relay" | "Motion";
