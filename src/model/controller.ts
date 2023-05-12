@@ -106,6 +106,7 @@ export default class Controller {
         }).then( data => {
             //success data analyzing
             console.log(`Success ${device.id}; data='${JSON.stringify(data)}'`);
+            device.createReportTimer();
         }).catch (reason => {
             console.log(`CATCH ${device.id}; ${reason}`);
         })
