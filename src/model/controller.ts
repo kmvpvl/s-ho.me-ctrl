@@ -3,6 +3,7 @@ import { DHT22Hum, DHT22Temp } from "./dht";
 import SHOMEError from "./error";
 import { PIRMotion } from "./motionsensor";
 import rpio from "rpio";
+import fetch from 'node-fetch';
 
 export type ControllerMode = {
     name: string;
