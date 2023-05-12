@@ -39,6 +39,7 @@ export default class DeviceProto {
         this.props = props;
         this.eventEmitter = new EventEmitter();
         this.createReadTimer();
+        this.createReportTimer();
         console.log(`Device ${props.id} (${props.name}: type=${props.type}, hw=${props.hardware}, pin=${props.pin}) has just initialized. Emulation='${props.emulation}'`);
     }
 
@@ -49,6 +50,13 @@ export default class DeviceProto {
         }, this.props.freqRead * 1000, this);
     }
     
+    public createReportTimer() {
+        this.reportTimerID = setTimeout((device)=>{
+            device.timeToReport();
+            device.createReportTimer();
+        }, this.props.freqReport * 1000, this);
+    }
+
     protected initPin(): void{
         throw new SHOMEError("abstract:notimplemented", `initPin function`);
     }
@@ -66,11 +74,16 @@ export default class DeviceProto {
         const dvalue = this.draftRead();
         if ((this.value!==undefined && !this.props.threshold && !Math.abs(this.value - dvalue)) 
         || (this.value!==undefined && this.props.threshold && Math.abs(this.value - dvalue) < this.props.threshold)) {
-            // value not changed or change in range of threshold, do nothing
+            // value not changed or change in the range of threshold, do nothing
         } else {
             this._value = dvalue;
-            this.eventEmitter.emit('value_changed', this);
+            this.eventEmitter.emit('change', this);
+            if (this.props.reportOnValueChanged) this.timeToReport();
         }
+    }
+
+    public timeToReport(){
+        this.eventEmitter.emit('report', this);
     }
 
     public on(event: string, callback: (d: DeviceProto)=>void) {

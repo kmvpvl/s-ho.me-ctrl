@@ -65,8 +65,11 @@ export default class Controller {
                 default: throw new SHOMEError("hardware:unknowndevice", JSON.stringify(device))
             }
             this.devs.push(d);
-            d.on('value_changed', (device)=>{
+            d.on('change', (device)=>{
                 console.log(`Value changed event device.id='${device.id}', value='${device.value}'`);
+            });
+            d.on('report', (device)=>{
+                console.log(`Device report: id='${device.id}', value='${device.value}'`);
             })
         }
         console.log(`Controller ${this.props.controller.name} is started successfully`);
