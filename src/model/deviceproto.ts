@@ -8,6 +8,7 @@ export type DeviceProps = {
     id: string;
     name: string;
     type: DeviceType;
+    units?: string;
     hardware: HardwareType;
     emulation?: boolean;
     pin: number;
@@ -28,7 +29,12 @@ export type DeviceProps = {
         min?: number;
     }>
 }
-
+export type DeviceDataToReport = {
+    id: string;
+    value: number;
+    desc?: string;
+    extra?: object;
+}
 export default class DeviceProto {
     private eventEmitter: EventEmitter;
     protected props: DeviceProps;
@@ -44,6 +50,7 @@ export default class DeviceProto {
     }
 
     public createReadTimer() {
+        if (this.readTimerID) clearTimeout(this.readTimerID);
         this.readTimerID = setTimeout((device)=>{
             device.updateValue();
             device.createReadTimer();
@@ -51,6 +58,7 @@ export default class DeviceProto {
     }
     
     public createReportTimer() {
+        if (this.reportTimerID) clearTimeout(this.reportTimerID);
         this.reportTimerID = setTimeout((device)=>{
             device.timeToReport();
             device.createReportTimer();
@@ -93,7 +101,24 @@ export default class DeviceProto {
         return this.props.precision!==undefined && this._value!==undefined?DeviceProto.setPrecision(this._value, this.props.precision):this._value;
     }
 
+    public get strValue(): string | undefined {
+        return `${this.value}${this.props.units?this.props.units:''}`;
+    }
+
     public get id(): string {
         return this.props.id;
+    }
+
+    public prepareDataToReport(): DeviceDataToReport {
+        if (undefined === this.value) throw new SHOMEError("report:deviceisnotreadytoreport", `device_id='${this.id}'`);
+        return {
+            id: this.id,
+            value: this.value,
+            desc: this.strValue
+        };
+    }
+
+    public processResponceOfReport () {
+
     }
 }
