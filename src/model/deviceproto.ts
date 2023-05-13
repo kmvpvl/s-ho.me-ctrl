@@ -17,6 +17,7 @@ export type DeviceProps = {
     threshold?: number;
     precision?: number;
     reportOnValueChanged: boolean;
+    reportOnInit?: boolean;
     location: {
         layer: string;
         x?: number;
@@ -50,7 +51,7 @@ export default class DeviceProto {
     }
 
     public createReadTimer() {
-        if (this.readTimerID) clearTimeout(this.readTimerID);
+        if (this.readTimerID !== undefined) clearTimeout(this.readTimerID);
         this.readTimerID = setTimeout((device)=>{
             device.updateValue();
             device.createReadTimer();
@@ -58,7 +59,7 @@ export default class DeviceProto {
     }
     
     public createReportTimer() {
-        if (this.reportTimerID) clearTimeout(this.reportTimerID);
+        if (this.reportTimerID !== undefined) clearTimeout(this.reportTimerID);
         this.reportTimerID = setTimeout((device)=>{
             device.timeToReport();
             device.createReportTimer();
@@ -84,9 +85,10 @@ export default class DeviceProto {
         || (this.value!==undefined && this.props.threshold && Math.abs(this.value - dvalue) < this.props.threshold)) {
             // value not changed or change in the range of threshold, do nothing
         } else {
+            const repOnInit = this.props.reportOnInit && this._value === undefined && dvalue !== undefined;
             this._value = dvalue;
             this.eventEmitter.emit('change', this);
-            if (this.props.reportOnValueChanged) this.timeToReport();
+            if (this.props.reportOnValueChanged || repOnInit) this.timeToReport();
         }
     }
 
