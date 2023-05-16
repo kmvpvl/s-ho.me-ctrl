@@ -81,6 +81,30 @@ export default class Controller {
             })
         }
         console.log(`Controller '${this.props.controller.name}' is started successfully`);
+        this.report("initcontroller", this.props, (data)=>console.log(JSON.stringify(data)), (res)=>console.log(JSON.stringify(res)));
+    }
+
+    protected report(command: string, data: any, successcb: (data: any)=>void, failcb: (res: any)=>void) {
+        fetch(`${this.props.server.url}/${command}`, {
+            headers: [
+                ["auth_shome", this.props.server.auth_SHOME],
+                ["Content-Type", "application/json"]
+            ],
+            method: "POST",
+            redirect: "follow",
+            body: JSON.stringify(data)
+        }).then(res => {
+            //success async
+            //console.log(res);
+            if (res.ok) return res.json();
+            //failcb(res);
+            return Promise.reject(res);
+        }).then( data => {
+            //success data analyzing
+            successcb(data);
+        }).catch (reason => {
+            failcb(reason);
+        })
     }
     
     public reportToServer(device: DeviceProto){
@@ -88,28 +112,13 @@ export default class Controller {
             timestamp: new Date(),
             devices: []
         };
-        rd.devices.push(device.prepareDataToReport()); 
-        fetch(`${this.props.server.url}/`, {
-            headers: [
-                ["auth_shome", this.props.server.auth_SHOME],
-                ["Content-Type", "application/json"]
-            ],
-            method: "POST",
-            redirect: "follow",
-            body: JSON.stringify(rd)
-        }).then(res => {
-            //success async
-            //console.log(res);
-            if (res.ok) return res.json();
-            console.log(`FAIL ${device.id}; res='${res.status}'`);
-            return Promise.reject(res);
-        }).then( data => {
-            //success data analyzing
+        rd.devices.push(device.prepareDataToReport());
+        this.report("devicereport", rd, (data)=>{
             console.log(`Success ${device.id}; data='${JSON.stringify(data)}'`);
             device.createReportTimer();
-        }).catch (reason => {
-            console.log(`CATCH ${device.id}; ${reason}`);
-        })
+        }, (res)=>{
+            console.log(`FAIL ${device.id}; res='${res.status}'`);
+        }); 
     }
 
     public reportToTG(){
