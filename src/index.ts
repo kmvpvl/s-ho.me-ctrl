@@ -9,6 +9,7 @@ const removeJSONComments = (json: string) => {
 try {
     let strSettings = fs.readFileSync("settings.json", "utf-8");
     settings =  JSON.parse(removeJSONComments(strSettings));
+    require('log-timestamp')(settings.controller.name);
     const controller = new Controller(settings);
 } catch (err: any) {
     console.error(`Controller not started - ${err.message}`);
