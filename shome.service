@@ -1,0 +1,17 @@
+# copy this file to /lib/systemd/system
+# sudo systemctl daemon-reload
+# sudo systemctl start shome.service
+# sudo systemctl enable shome.service
+
+[Unit]
+Description=S-HO.ME service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=bash /home/kmvpv/s-ho.me-ctrl/shomestart.sh
+WorkingDirectory=/home/kmvpv/s-ho.me-ctrl
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
