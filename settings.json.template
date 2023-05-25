@@ -47,7 +47,8 @@
     "server": {
         "url": "",
         "alt_url": "",
-        "auth_SHOME": "",
+        "shome_organizationid": "***",
+        "shome_authtoken": "***",
         "attemptsBeforeAltURL": 4
     },
     // enumeration of all devices connected to controller

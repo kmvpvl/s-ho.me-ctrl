@@ -41,7 +41,8 @@ export type ControllerProps = {
     server: {
         url: string;
         alt_url?: string;
-        auth_SHOME: string;
+        shome_organizationid: string;
+        shome_authtoken: string;
         attemptsBeforeAltURL?: number;
     }
 }
@@ -94,7 +95,7 @@ export default class Controller {
                 c.reportDevice(device);
             })
         }
-        this.reportToServer("initcontroller", this.props, (data)=>console.log(JSON.stringify(data)), (res)=>console.log(JSON.stringify(res)));
+        this.reportToServer("initcontroller", this.props.controller, (data)=>console.log(JSON.stringify(data)), (res)=>console.log(JSON.stringify(res)));
         if (this.props.notifications?.startController) this.notify( `has started successfully`);
         console.log(`Controller '${this.props.controller.name}' has started successfully`);
     }
@@ -103,8 +104,9 @@ export default class Controller {
         let url = this.props.server.url; 
         fetch(`${url}/${command}`, {
             headers: [
-                ["auth_shome", this.props.server.auth_SHOME],
-                ["Content-Type", "application/json"]
+                ["Content-Type", "application/json"],
+                ["shome_organizationid", this.props.server.shome_organizationid],
+                ["shome_authtoken", this.props.server.shome_authtoken],
             ],
             method: "POST",
             redirect: "follow",
