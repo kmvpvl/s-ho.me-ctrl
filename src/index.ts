@@ -1,7 +1,7 @@
-import Controller, { ControllerProps } from './model/controller';
+import Controller, { ControllerProps, TSettings } from './model/controller';
 import fs from 'fs';
 
-let settings: ControllerProps;
+let settings: TSettings;
 const removeJSONComments = (json: string) => {
     return json.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m);
 }

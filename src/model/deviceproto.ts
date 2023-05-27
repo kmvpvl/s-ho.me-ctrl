@@ -5,6 +5,7 @@ export type DeviceType = "Temp" | "Hum" | "Relay" | "Motion";
 export type HardwareType = "DHT22" | "BPM180" | "RELAYNO" | "RELAYNC" | "PIR";
 
 export type DeviceProps = {
+    organizationid?: string;
     id: string;
     name: string;
     type: DeviceType;

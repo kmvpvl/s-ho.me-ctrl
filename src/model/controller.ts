@@ -5,6 +5,7 @@ import { PIRMotion } from "./motionsensor";
 import rpio from "rpio";
 import fetch from 'node-fetch';
 import { Telegram, Telegraf, TelegramError, Context } from "telegraf";
+import colors from './colours';
 
 export type ControllerMode = {
     name: string;
@@ -13,21 +14,34 @@ export type ControllerMode = {
     server?: string
 }
 export type ControllerProps = {
+    name: string; 
+    description: string; 
+    autoupdate: {
+        auto: boolean;
+        repo?: string;
+        branch?: string;
+    },
+    location?: object;
+    buffer?: {
+        
+    };
+    logs?: object;
+    layers?: [{
+        sortNumber: number;
+        bgImage: string;
+        id: string;
+        name: string;
+    }];
+    rules?:{
+
+    }
+}
+
+export type TSettings = {
     mode?: string;
     modes?: Array<ControllerMode>;
     devices: Array<DeviceProps>;
-    controller: {
-        name: string; 
-        description: string; 
-        autoupdate: {
-            auto: boolean;
-            repo?: string;
-            branch?: string;
-        },
-        location?: object;
-        buffer?: object;
-        logs?: {}
-    };
+    controller: ControllerProps;
     notifications?: {
         tgToken?: string;
         tgUsers?: Array<string | number>;
@@ -52,10 +66,10 @@ export type DataToReport = {
 }
 
 export default class Controller {
-    protected props: ControllerProps;
+    protected props: TSettings;
     protected devs: Array<DeviceProto>;
     protected tgBot?: Telegraf;
-    constructor(props: ControllerProps) {
+    constructor(props: TSettings) {
         this.props = props;
         if (this.props.notifications) {
             const tgToken = this.props.notifications.tgToken?this.props.notifications.tgToken:process.env.tgToken;
@@ -67,39 +81,65 @@ export default class Controller {
         console.log(`Controller '${this.props.controller.name}' is starting...`);
         if (this.props.notifications?.startController) this.notify(`is starting...`);
         rpio.init({mapping: 'gpio'});
-        for (const [i, device] of Object.entries(props.devices)){
-            console.log(`${i}: Checking device id='${device.id}'; name='${device.name}'`);
-            let d: DeviceProto;
-            switch(`${device.hardware}:${device.type}`) {
-                case 'DHT22:Temp':
-                    d = new DHT22Temp(device);
-                    break;
-                case 'DHT22:Hum':
-                    d = new DHT22Hum(device);
-                    break;
-                case 'PIR:Motion':
-                    d = new PIRMotion(device);
-                    break;
-                default: 
-                    if (this.props.notifications?.unknownHardware) this.notify(`Unknown device found. Hardware='${device.hardware}'; type='${device.type}'`);
-                    throw new SHOMEError("hardware:unknowndevice", JSON.stringify(device))
-            }
-            this.devs.push(d);
-            if (this.props.notifications?.startDevice) this.notify(`Device started. Device='${device.name}'`);
-            let c = this;
-            d.on('change', (device)=>{
-                console.log(`Value changed event device.id='${device.id}', value='${device.value}'`);
-            });
-            d.on('report', (device)=>{
-                console.log(`Device report: id='${device.id}', value='${device.value}'`);
-                c.reportDevice(device);
-            })
-        }
-        this.reportToServer("initcontroller", this.props.controller, (data)=>console.log(JSON.stringify(data)), (res)=>console.log(JSON.stringify(res)));
-        if (this.props.notifications?.startController) this.notify( `has started successfully`);
-        console.log(`Controller '${this.props.controller.name}' has started successfully`);
-    }
 
+        this.reportToServer("initcontroller", this.props.controller, 
+        (data)=>{
+            //getting actual controller settings
+            console.log(`${colors.fg.green}Gotten controller settings from server='${JSON.stringify(data)}'${colors.reset}`);
+            // let me transfer properties from gotten structure to controller props
+            for (let prop in data) {
+                (this.props.controller as any)[prop] = data[prop];
+            }
+            this.initDevices();
+            console.log(`${colors.fg.green}Controller '${this.props.controller.name}' has started successfully${colors.reset}`);
+            if (this.props.notifications?.startController) this.notify( `has started successfully`);
+        }, 
+        (res)=>{
+            // error getting actual controller settings
+            console.log(`${colors.fg.red}Error reading settings of controller from server='${JSON.stringify(res)}'${colors.reset}`)
+        });
+    }
+    protected initDevices() {
+        this.props.devices.forEach((device)=>device.organizationid = this.props.server.shome_organizationid);
+        this.reportToServer("initdevices", this.props.devices, (data)=>{
+            //getting actual devices settings
+            console.log(`${colors.fg.green}Gotten devices settings from server='${JSON.stringify(data)}'${colors.reset}`);
+            for (let i in this.props.devices){
+                const device = this.props.devices[i];
+                console.log(`${i}: Checking device id='${device.id}'; name='${device.name}'`);
+                let d: DeviceProto;
+                switch(`${device.hardware}:${device.type}`) {
+                    case 'DHT22:Temp':
+                        d = new DHT22Temp(device);
+                        break;
+                    case 'DHT22:Hum':
+                        d = new DHT22Hum(device);
+                        break;
+                    case 'PIR:Motion':
+                        d = new PIRMotion(device);
+                        break;
+                    default: 
+                        if (this.props.notifications?.unknownHardware) this.notify(`Unknown device found. Hardware='${device.hardware}'; type='${device.type}'`);
+                        throw new SHOMEError("hardware:unknowndevice", JSON.stringify(device))
+                }
+                this.devs.push(d);
+                if (this.props.notifications?.startDevice) this.notify(`Device started. Device='${device.name}'`);
+                let c = this;
+                d.on('change', (device)=>{
+                    console.log(`Value changed event device.id='${device.id}', value='${device.value}'`);
+                });
+                d.on('report', (device)=>{
+                    console.log(`Device report: id='${device.id}', value='${device.value}'`);
+                    c.reportDevice(device);
+                });
+            }
+        }, 
+        (res)=>{
+            // error getting actual devices settings
+            console.log(`${colors.fg.red}Error reading settings of devices from server='${JSON.stringify(res)}'${colors.reset}`);
+
+        });
+    }
     protected reportToServer(command: string, data: any, successcb: (data: any)=>void, failcb: (res: any)=>void) {
         let url = this.props.server.url; 
         fetch(`${url}/${command}`, {
@@ -111,16 +151,16 @@ export default class Controller {
             method: "POST",
             redirect: "follow",
             body: JSON.stringify(data)
-        }).then(res => {
+        }).then(async res => {
             //success async
             //console.log(res);
             if (res.ok) return res.json();
-            //failcb(res);
-            return Promise.reject(new SHOMEError("report:fetcherror", `status='${res.status}', statusText='${res.statusText}'`));
+            const bodyText = await res.text();
+            return Promise.reject(new SHOMEError("report:fetcherror", `status='${res.status}', statusText='${res.statusText}'; body='${bodyText}'`));
         }).then( data => {
             //success data analyzing
             successcb(data);
-        }).catch (err => {
+        }).catch ( err => {
             console.log(`Fetch error: message='${err.message}', server_url='${url}', command='${command}', data='${JSON.stringify(data)}'`);
             failcb(err);
             if (this.props.notifications?.reportToServerFailed) this.notify(`reportToServerFailed: command='${command}', data='${JSON.stringify(data)}'; Fetch error: message='${err.message}', server_url='${url}'`);
@@ -134,10 +174,10 @@ export default class Controller {
         };
         rd.devices.push(device.prepareDataToReport());
         this.reportToServer("devicereport", rd, (data)=>{
-            console.log(`Success ${device.id}; data='${JSON.stringify(data)}'`);
+            console.log(`${colors.fg.green}Success ${device.id}; data='${JSON.stringify(data)}'${colors.reset}`);
             device.createReportTimer();
         }, (res)=>{
-            console.log(`FAIL ${device.id}; res='${res.status}'`);
+            console.log(`${colors.fg.red}FAIL ${device.id}; res='${res}'${colors.reset}`);
         }); 
     }
 
