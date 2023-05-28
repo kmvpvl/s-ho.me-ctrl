@@ -28,13 +28,11 @@ export type ControllerProps = {
     logs?: object;
     layers?: [{
         sortNumber: number;
-        bgImage: string;
+        bgImage?: string;
         id: string;
         name: string;
     }];
-    rules?:{
-
-    }
+    rules?:[]
 }
 
 export type TSettings = {
