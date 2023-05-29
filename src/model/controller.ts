@@ -56,6 +56,7 @@ export type TSettings = {
         shome_organizationid: string;
         shome_authtoken: string;
         attemptsBeforeAltURL?: number;
+        startOffline?: boolean;
     }
 }
 export type DataToReport = {
@@ -94,7 +95,17 @@ export default class Controller {
         }, 
         (res)=>{
             // error getting actual controller settings
-            console.log(`${colors.fg.red}Error reading settings of controller from server='${JSON.stringify(res)}'${colors.reset}`)
+            console.log(`${colors.fg.red}Error reading settings of controller from server='${JSON.stringify(res)}'${colors.reset}`);
+            // let's start without server and collect values
+            console.log(`${colors.fg.yellow}Controller '${this.props.controller.name}' has started alone${colors.reset}`);
+            if (this.props.server.startOffline) {
+                if (this.props.notifications?.startController) this.notify( `has started alone`);
+
+                this.initDevices();
+            } else {
+                throw new SHOMEError("start:restart", `Couldnot start controller`);
+                //process.exit(1);
+            }
         });
     }
     protected initDevices() {
@@ -102,42 +113,52 @@ export default class Controller {
         this.reportToServer("initdevices", this.props.devices, (data)=>{
             //getting actual devices settings
             console.log(`${colors.fg.green}Gotten devices settings from server='${JSON.stringify(data)}'${colors.reset}`);
-            for (let i in this.props.devices){
-                const device = this.props.devices[i];
-                console.log(`${i}: Checking device id='${device.id}'; name='${device.name}'`);
-                let d: DeviceProto;
-                switch(`${device.hardware}:${device.type}`) {
-                    case 'DHT22:Temp':
-                        d = new DHT22Temp(device);
-                        break;
-                    case 'DHT22:Hum':
-                        d = new DHT22Hum(device);
-                        break;
-                    case 'PIR:Motion':
-                        d = new PIRMotion(device);
-                        break;
-                    default: 
-                        if (this.props.notifications?.unknownHardware) this.notify(`Unknown device found. Hardware='${device.hardware}'; type='${device.type}'`);
-                        throw new SHOMEError("hardware:unknowndevice", JSON.stringify(device))
-                }
-                this.devs.push(d);
-                if (this.props.notifications?.startDevice) this.notify(`Device started. Device='${device.name}'`);
-                let c = this;
-                d.on('change', (device)=>{
-                    console.log(`Value changed event device.id='${device.id}', value='${device.value}'`);
-                });
-                d.on('report', (device)=>{
-                    console.log(`Device report: id='${device.id}', value='${device.value}'`);
-                    c.reportDevice(device);
-                });
-            }
+            this.activateDevices();
         }, 
         (res)=>{
             // error getting actual devices settings
             console.log(`${colors.fg.red}Error reading settings of devices from server='${JSON.stringify(res)}'${colors.reset}`);
-
+            if (this.props.server.startOffline) {
+                this.activateDevices();
+            } else {
+                throw new SHOMEError("start:restart", `Couldnot start devices`);
+                //process.exit(1);
+            }
         });
     }
+
+    protected activateDevices() {
+        for (let i in this.props.devices){
+            const device = this.props.devices[i];
+            console.log(`${i}: Checking device id='${device.id}'; name='${device.name}'`);
+            let d: DeviceProto;
+            switch(`${device.hardware}:${device.type}`) {
+                case 'DHT22:Temp':
+                    d = new DHT22Temp(device);
+                    break;
+                case 'DHT22:Hum':
+                    d = new DHT22Hum(device);
+                    break;
+                case 'PIR:Motion':
+                    d = new PIRMotion(device);
+                    break;
+                default: 
+                    if (this.props.notifications?.unknownHardware) this.notify(`Unknown device found. Hardware='${device.hardware}'; type='${device.type}'`);
+                    throw new SHOMEError("hardware:unknowndevice", JSON.stringify(device))
+            }
+            this.devs.push(d);
+            if (this.props.notifications?.startDevice) this.notify(`Device started. Device='${device.name}'`);
+            let c = this;
+            d.on('change', (device)=>{
+                console.log(`Value changed event device.id='${device.id}', value='${device.value}'`);
+            });
+            d.on('report', (device)=>{
+                console.log(`Device report: id='${device.id}', value='${device.value}'`);
+                c.reportDevice(device);
+            });
+        }
+}
+
     protected reportToServer(command: string, data: any, successcb: (data: any)=>void, failcb: (res: any)=>void) {
         let url = this.props.server.url; 
         fetch(`${url}/${command}`, {

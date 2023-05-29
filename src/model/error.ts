@@ -2,7 +2,8 @@ export type ErrorCode = "abstract:notimplemented" |
 "abstract:unknown" |
 "hardware:unknowndevice" |
 "report:deviceisnotreadytoreport" |
-"report:fetcherror";
+"report:fetcherror" |
+"start:restart";
 export default class SHOMEError extends Error {
     protected code: ErrorCode;
     protected desc?: string;

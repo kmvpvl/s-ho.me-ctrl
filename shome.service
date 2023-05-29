@@ -1,3 +1,4 @@
+# change working dir and path to bash file below
 # copy this file to /lib/systemd/system
 # sudo systemctl daemon-reload
 # sudo systemctl start shome.service
@@ -9,8 +10,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=bash /home/kmvpv/s-ho.me-ctrl/shomestart.sh
-WorkingDirectory=/home/kmvpv/s-ho.me-ctrl
+ExecStart=bash <to_project_dir>/s-ho.me-ctrl/shomestart.sh
+WorkingDirectory=<to_project_dir>/s-ho.me-ctrl
 Restart=on-failure
 
 [Install]
