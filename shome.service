@@ -12,7 +12,10 @@ After=network.target
 Type=simple
 ExecStart=bash <to_project_dir>/s-ho.me-ctrl/shomestart.sh
 WorkingDirectory=<to_project_dir>/s-ho.me-ctrl
+KillMode=process
 Restart=on-failure
+RestartSec=120
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

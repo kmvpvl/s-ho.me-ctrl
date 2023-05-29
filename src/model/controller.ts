@@ -97,8 +97,8 @@ export default class Controller {
             // error getting actual controller settings
             console.log(`${colors.fg.red}Error reading settings of controller from server='${JSON.stringify(res)}'${colors.reset}`);
             // let's start without server and collect values
-            console.log(`${colors.fg.yellow}Controller '${this.props.controller.name}' has started alone${colors.reset}`);
             if (this.props.server.startOffline) {
+                console.log(`${colors.fg.yellow}Controller '${this.props.controller.name}' has started alone${colors.reset}`);
                 if (this.props.notifications?.startController) this.notify( `has started alone`);
 
                 this.initDevices();
