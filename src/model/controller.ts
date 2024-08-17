@@ -164,8 +164,8 @@ export default class Controller {
         fetch(`${url}/${command}`, {
             headers: [
                 ["Content-Type", "application/json"],
-                ["shome_organizationid", this.props.server.shome_organizationid],
-                ["shome_authtoken", this.props.server.shome_authtoken],
+                ["shome-organizationid", this.props.server.shome_organizationid],
+                ["shome-authtoken", this.props.server.shome_authtoken],
             ],
             method: "POST",
             redirect: "follow",

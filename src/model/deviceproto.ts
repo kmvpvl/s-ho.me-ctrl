@@ -33,6 +33,7 @@ export type DeviceProps = {
 }
 export type DeviceDataToReport = {
     id: string;
+    timestamp: Date;
     value: number;
     desc?: string;
     extra?: object;
@@ -116,6 +117,7 @@ export default class DeviceProto {
         if (undefined === this.value) throw new SHOMEError("report:deviceisnotreadytoreport", `device_id='${this.id}'`);
         return {
             id: this.id,
+            timestamp: new Date(),
             value: this.value,
             desc: this.strValue
         };
